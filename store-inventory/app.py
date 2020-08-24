@@ -109,7 +109,7 @@ def new_product():
         except:
             print('\nPlease only enter a numeric value.\n')
     while True:
-        price = input('Enter the price of the product: ')
+        price = input('Enter the full price of the product including cents: ')
         try:
             int(price)
             break
@@ -141,35 +141,36 @@ def new_product():
             print('Updated old entry')
 
 def backup():
+    clear()
+    ans = 'y'
     if os.path.isfile('./backup.csv'):
-        clear()
         while True:
             ans = input('A backup already exits. Would you like to overwrite it? [Y/N] ').lower()
             if ans == 'y' or ans == 'n':
                 break
             else:
                 print('\nPlease enter "y" or "n"\n')
-        if ans == 'y':
-            with open('backup.csv', 'w') as csv_backup:
-                fieldnames = ['product_id', 'product_name', 'product_price', 'product_quantity', 'date_updated']
-                Backup = csv.DictWriter(csv_backup, fieldnames=fieldnames)
-                Backup.writeheader()
-                products = Product.select().order_by(Product.product_id)
-                for entry in products:
-                    coin = str(entry.product_price)
-                    point = len(coin) - 2
-                    cash ='$' + coin[0:point] + '.' + coin[point:]
-                    Backup.writerow({
-                    'product_id': entry.product_id,
-                    'product_name': entry.product_name,
-                    'product_price': cash,
-                    'product_quantity': entry.product_quantity,
-                    'date_updated': entry.date_updated})
-            clear()
-            print('Backup Successful!')
-        if ans == 'n':
-            clear()
-            print('Backup aborted')
+    if ans == 'y':
+        with open('backup.csv', 'w') as csv_backup:
+            fieldnames = ['product_id', 'product_name', 'product_price', 'product_quantity', 'date_updated']
+            Backup = csv.DictWriter(csv_backup, fieldnames=fieldnames)
+            Backup.writeheader()
+            products = Product.select().order_by(Product.product_id)
+            for entry in products:
+                coin = str(entry.product_price)
+                point = len(coin) - 2
+                cash ='$' + coin[0:point] + '.' + coin[point:]
+                Backup.writerow({
+                'product_id': entry.product_id,
+                'product_name': entry.product_name,
+                'product_price': cash,
+                'product_quantity': entry.product_quantity,
+                'date_updated': entry.date_updated})
+        clear()
+        print('Backup Successful!')
+    if ans == 'n':
+        clear()
+        print('Backup aborted')
 
 
 if __name__ == '__main__':
